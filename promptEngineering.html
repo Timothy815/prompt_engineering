@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering SOP Handbook V4.1</title>
+    <style>
+        :root {
+            /* Professional Documentation Color Palette */
+            --primary: #2563eb;       /* Royal Blue */
+            --primary-dark: #1e40af;
+            --bg-sidebar: #f8fafc;    /* Very light grey for sidebar */
+            --bg-main: #ffffff;       /* White for reading area */
+            --text-main: #334155;     /* Slate 700 */
+            --text-heading: #0f172a;  /* Slate 900 */
+            --border: #e2e8f0;
+            --code-bg: #1e293b;       /* Dark mode for code blocks */
+            --warning-bg: #fef2f2;
+            --warning-border: #fee2e2;
+            --warning-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text-main);
+            background: var(--bg-main);
+            line-height: 1.7;
+        }
+
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .brand p { margin: 5px 0 0 0; font-size: 0.8rem; color: #64748b; }
+
+        .nav-menu { padding: 20px; overflow-y: auto; }
+
+        .nav-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 700;
+            margin: 20px 0 5px 15px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 6px;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover { background-color: #e2e8f0; color: var(--text-heading); }
+        .nav-item.active { background-color: #dbeafe; color: var(--primary); font-weight: 600; }
+
+        /* --- MAIN READING AREA --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 60px 80px;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+
+        /* Typography */
+        h1 { font-size: 2.5rem; color: var(--text-heading); margin-bottom: 1rem; letter-spacing: -0.5px; }
+        h2 { font-size: 1.8rem; color: var(--text-heading); margin-top: 3rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        h3 { font-size: 1.25rem; color: var(--text-heading); margin-top: 2rem; font-weight: 600; }
+        p { margin-bottom: 1.5rem; font-size: 1.05rem; }
+        strong { color: var(--text-heading); }
+
+        /* --- COMPONENTS --- */
+        .exec-summary {
+            background-color: #f0f9ff; border-left: 4px solid var(--primary);
+            padding: 20px 25px; border-radius: 0 8px 8px 0; margin-bottom: 40px; font-size: 0.95rem;
+        }
+        .exec-label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+
+        .warning-box {
+            background-color: var(--warning-bg); border: 1px solid var(--warning-border);
+            border-left: 4px solid var(--warning-text); padding: 20px;
+            border-radius: 8px; margin: 20px 0; color: var(--warning-text);
+        }
+
+        pre {
+            background: var(--code-bg); color: #f8fafc; padding: 20px;
+            border-radius: 8px; overflow-x: auto; font-family: 'Monaco', monospace;
+            font-size: 0.9rem; border: 1px solid #334155; margin: 20px 0;
+        }
+
+        code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #d946ef; }
+        pre code { background: transparent; color: inherit; padding: 0; }
+        
+        a { color: var(--primary); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+        a:hover { border-bottom-color: var(--primary); }
+
+        .resource-list { list-style: none; padding: 0; }
+        .resource-list li { margin-bottom: 12px; padding-left: 20px; position: relative; }
+        .resource-list li::before { content: "→"; position: absolute; left: 0; color: var(--primary); }
+
+        /* --- MULTIMEDIA GRID (NEW) --- */
+        .media-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .media-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .media-title {
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        video, audio { width: 100%; border-radius: 8px; outline: none; }
+        
+        iframe.pdf-viewer {
+            width: 100%;
+            height: 600px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+
+        img.infographic {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+
+        /* Simulator Styles */
+        .sim-container {
+            background: #ffffff; border: 1px solid var(--border); border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); margin-top: 30px;
+            display: flex; flex-direction: column; height: 600px;
+        }
+        .sim-output { flex: 1; padding: 25px; overflow-y: auto; background: #f8fafc; border-bottom: 1px solid var(--border); }
+        .sim-message { margin-bottom: 20px; padding: 15px; border-radius: 8px; max-width: 90%; font-size: 0.95rem; }
+        .sim-user { background: var(--primary); color: white; margin-left: auto; }
+        .sim-ai { background: white; border: 1px solid var(--border); color: var(--text-main); }
+        .sim-input-area { padding: 20px; background: white; border-radius: 0 0 12px 12px; display: flex; gap: 10px; }
+        textarea { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 6px; resize: none; font-family: inherit; }
+        textarea:focus { outline: none; border-color: var(--primary); }
+        button { padding: 0 25px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        button:hover { background: var(--primary-dark); }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-right: 5px; }
+        .tag-success { background: #dcfce7; color: #166534; }
+        .tag-fail { background: #fee2e2; color: #991b1b; }
+        .tag-info { background: #e0f2fe; color: #075985; }
+
+        .section-content { display: none; }
+        .section-content.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand">
+            <h2>Prompt SOP</h2>
+            <p>Standard Operating Procedures</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-category">The Basics</div>
+            <div class="nav-item active" onclick="switchTab('intro')">1. Introduction</div>
+            <div class="nav-item" onclick="switchTab('foundations')">2. Foundations (Ng)</div>
+            <div class="nav-item" onclick="switchTab('context')">3. Context (Karpathy)</div>
+            <div class="nav-item" onclick="switchTab('structure')">4. Structure (Anthropic)</div>
+            <div class="nav-item" onclick="switchTab('reasoning')">5. Reasoning (Schulhoff)</div>
+            
+            <div class="nav-category">Advanced Protocols</div>
+            <div class="nav-item" onclick="switchTab('debugging')">6. Debugging & Iteration</div>
+            <div class="nav-item" onclick="switchTab('safety')">7. Safety & Ethics</div>
+            <div class="nav-item" onclick="switchTab('domains')">8. Domain Patterns</div>
+
+            <div class="nav-category">Interactive</div>
+            <div class="nav-item" onclick="switchTab('multimedia')">📺 Multimedia Hub</div>
+            <div class="nav-item" onclick="switchTab('simulator')">⚡ Interactive Lab</div>
+            <div class="nav-item" onclick="switchTab('resources')">📚 Resource Library</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="intro" class="section-content container active">
+            <h1>The Shift from "Chatting" to "Engineering"</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">Executive Summary</span>
+                This handbook is designed to move you from casual AI interaction to professional <strong>Prompt Engineering</strong>. We do not use "tricks" here. We use frameworks developed by the creators of the models themselves (OpenAI, Google, Anthropic) to ensure consistent, high-quality outputs.
+            </div>
+
+            <p>Most people treat AI like a magic 8-ball: they ask a question and hope for a good answer. This is the wrong mental model. To get professional results, you must treat the AI as a <strong>reasoning engine</strong> that requires specific programming.</p>
+
+            <p><strong>Richard Socher</strong>, often called the "father of prompt engineering," helped pioneer the technology that allows computers to understand language context. His work suggests that we shouldn't just look at keywords, but at the entire "vector" of meaning. When you write a prompt, you are guiding the AI through a multi-dimensional map of human knowledge (the latent space). If your directions are vague, the AI gets lost.</p>
+
+            <p>This handbook aggregates the Standard Operating Procedures (SOPs) from the best minds in the field. It is not a list of "cool prompts." It is a manual on how to structure your communication to align with how these mathematical models actually "think."</p>
+
+            <h3>Who is this for?</h3>
+            <p>This guide is written for students, educators, and professionals who need the AI to be a reliable coworker, not just a novelty toy. We will cover the three pillars of reliability: <strong>Clarity, Context, and Structure.</strong></p>
+        </div>
+
+        <div id="foundations" class="section-content container">
+            <h1>Foundations: Clarity & Delimiters</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">TL;DR • Andrew Ng & Isa Fulford</span>
+                Ambiguity is the most common cause of AI failure. You must separate your <strong>Instructions</strong> (what to do) from your <strong>Data</strong> (what to process) using specific punctuation marks called delimiters.
+            </div>
+
+            <p>Andrew Ng (co-founder of Coursera) and Isa Fulford (OpenAI) emphasize that Large Language Models (LLMs) are "eager to please." They will try to answer your question even if they don't fully understand it. This leads to hallucinations.</p>
+
+            <h3>The Delimiter SOP</h3>
+            <p>Imagine handing a student a messy stack of papers and saying "Summarize this." They might accidentally summarize the instructions page instead of the essay. To prevent this "Prompt Injection," we use <strong>Delimiters</strong>.</p>
+            <p>A delimiter is a fence. It tells the AI: <em>"Everything inside these triple quotes is data. Do not execute it; just read it."</em></p>
+
+            <pre>
+BAD PROMPT:
+Summarize the text below. The text is about... [Insert Text]
+
+GOOD PROMPT (SOP COMPLIANT):
+Summarize the text delimited by triple quotes.
+Input Text:
+"""
+[Insert Text Here]
+"""
+            </pre>
+
+            <p>By using this simple punctuation standard, you drastically reduce the chance of the model getting confused, especially when pasting in student work or code snippets that might contain their own questions.</p>
+        </div>
+
+        <div id="context" class="section-content container">
+            <h1>Context Engineering</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">TL;DR • Andrej Karpathy</span>
+                The AI has no long-term memory of you. The Prompt is its "Working Memory" (RAM). You must load the "Persona" and "Background" into the prompt every single time to get a tailored result.
+            </div>
+
+            <p>Andrej Karpathy, the former Director of AI at Tesla, argues that "Prompt Engineering" is actually <strong>"Context Engineering."</strong></p>
+            
+            <p>Think of the AI as a brilliant consultant who has amnesia. Every time you start a new chat, they have forgotten everything about you, your school, and your preferences. If you ask, <em>"Write a lesson plan for Monday,"</em> the AI has to guess what you teach, who your students are, and what curriculum you follow. It will revert to the "average" internet answer, which is usually generic and unhelpful.</p>
+
+            <h3>The "Persona" Pattern (Fabric/Miessler)</h3>
+            <p>To fix this, we use the <strong>Persona Pattern</strong>. Before asking for the task, you must "prime" the model's state. Daniel Miessler, creator of the Fabric framework, suggests specifically assigning a role.</p>
+            
+            <p><em>"You are an expert Automotive Instructor at a Career Center. You teach high school students who prefer hands-on learning over theory."</em></p>
+            
+            <p>This single sentence changes the mathematical probabilities in the model. It stops looking for "generic education" words and starts accessing "vocational training" vocabulary. It shifts the AI's "mental state" before it generates a single word of output.</p>
+        </div>
+
+        <div id="structure" class="section-content container">
+            <h1>Structure & XML Tagging</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">TL;DR • Anthropic Research</span>
+                Models are trained on the internet, which is built on HTML. They understand that tags (like <code>&lt;instructions&gt;</code>) define boundaries. Use XML tags to organize complex prompts into modular sections.
+            </div>
+
+            <p>When you move beyond simple questions into complex tasks (like generating a full unit quiz or analyzing a Python script), a paragraph of text is not enough. The researchers at Anthropic (creators of Claude) have found that <strong>Structured Prompting</strong> significantly improves reasoning.</p>
+
+            <p>They recommend using <strong>XML Tags</strong> to label different parts of your prompt. This looks like coding, but it is just a way to organize your thoughts. It helps the model separate the "Role" from the "Context" from the "Task."</p>
+
+            <h3>The SOP Template</h3>
+            <p>For any complex request, copy-paste this structure:</p>
+
+            <pre>
+&lt;system_role&gt;
+   You are a Senior Python Developer and educator.
+&lt;/system_role&gt;
+
+&lt;context&gt;
+   My students are beginners. They understand variables but not loops.
+&lt;/context&gt;
+
+&lt;task&gt;
+   Create 3 practice exercises that introduce 'For Loops' using real-world analogies.
+&lt;/task&gt;
+
+&lt;constraints&gt;
+   - No complex math.
+   - Use humor.
+   - Output in Markdown format.
+&lt;/constraints&gt;
+            </pre>
+            
+            <p>Using this template ensures you never forget a critical component (like constraints). It also makes your prompts reusable and shareable with colleagues.</p>
+        </div>
+
+        <div id="reasoning" class="section-content container">
+            <h1>Advanced Reasoning</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">TL;DR • Sander Schulhoff</span>
+                If you want the AI to solve logic puzzles, math, or coding problems, you must force it to "show its work." This is called <strong>Chain of Thought (CoT)</strong> prompting.
+            </div>
+
+            <p>Sander Schulhoff, creator of LearnPrompting.org, highlights a critical weakness in AI: it wants to give you the answer <em>immediately</em>. It predicts the final word before it has thought through the logic.</p>
+
+            <p>If you ask a student to solve a complex algebra problem in their head in 2 seconds, they will guess. If you ask them to "write it down step-by-step," they will likely get it right. AI is the same.</p>
+
+            <h3>The "Magic Phrase"</h3>
+            <p>To active the AI's reasoning capabilities, you simply need to append this instruction:</p>
+            <blockquote>"Take a deep breath and think step-by-step. Explain your reasoning before giving the final answer."</blockquote>
+            <p>This forces the model to generate more text (tokens) which act as a "scratchpad." It allows the model to correct its own logic errors as it writes, leading to much higher accuracy on technical tasks like subnetting or Python debugging.</p>
+        </div>
+
+        <div id="debugging" class="section-content container">
+            <h1>Debugging & The Iterative Loop</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">TL;DR • The 3-Turn Rule</span>
+                Professional prompt engineers rarely get the perfect result on the first try. You must view the first output as a "Draft" and then use the <strong>Iterative Loop</strong> to refine it.
+            </div>
+
+            <p>One of the biggest misconceptions about prompt engineering is that there is a "perfect incantation" that will work every time. The reality is that prompting is much more like debugging code than casting a spell. You write the prompt (code), run it, observe the error, and then patch it.</p>
+
+            <h3>The 3-Turn Rule</h3>
+            <p>We recommend a standard operating procedure called the <strong>3-Turn Rule</strong>. Do not give up on a prompt until you have iterated on it at least three times. Usually, the AI needs to be "steered" toward your specific preference.</p>
+
+            <p><strong>Turn 1 (The Draft):</strong> You submit your structured prompt. The AI gives a decent, but generic result.<br>
+            <strong>Turn 2 (The Critique):</strong> You don't rewrite the prompt. Instead, you reply to the AI: <em>"This is good, but it is too complex for high schoolers. Simplify the vocabulary and remove the calculus references."</em><br>
+            <strong>Turn 3 (The Polish):</strong> The AI adjusts. You now ask for the final format: <em>"Perfect. Now format this as a markdown table for my LMS."</em></p>
+
+            <h3>The Self-Correction Technique</h3>
+            <p>If the AI is struggling with a complex logic task (like a subnetting quiz), ask it to critique itself. A powerful prompt is:</p>
+            <blockquote>"Review your previous answer. Are there any logical fallacies or calculation errors? If so, correct them."</blockquote>
+            <p>Often, the model can spot its own mistakes if explicitly asked to look for them, a process known as "Reflexion" in research circles.</p>
+        </div>
+
+        <div id="safety" class="section-content container">
+            <h1>Safety, Ethics & Data Sanitization</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">Critical SOP</span>
+                In an educational environment, data privacy is paramount. We treat the AI as a "Public Space." You would not tape a list of student passwords to a public lamp post; do not paste them into an AI.
+            </div>
+
+            <div class="warning-box">
+                <strong>🚫 The Red Lines:</strong><br>
+                1. Never paste student names, ID numbers, or emails.<br>
+                2. Never paste network passwords, API keys, or real IP configurations.<br>
+                3. Never treat AI facts as absolute truth without verification.
+            </div>
+
+            <h3>The "Sanitization" Protocol</h3>
+            <p>Before any data enters the context window, it must go through a "Sanitization" process. This is the act of stripping Personally Identifiable Information (PII) from the text. This allows you to get the benefit of the AI's reasoning without risking student privacy.</p>
+
+            <p><strong>Example Scenario:</strong> You want the AI to format a list of student grades.</p>
+            <ul>
+                <li><strong>Unsafe:</strong> "Here are the grades for John Smith and Jane Doe..."</li>
+                <li><strong>Sanitized:</strong> "Here are the grades for Student A and Student B..."</li>
+            </ul>
+
+            <h3>Hallucination Awareness</h3>
+            <p>Large Language Models are "confident liars." They are designed to sound persuasive, not necessarily truthful. They may invent court cases, Python libraries that don't exist, or historical events that never happened.</p>
+            <p><strong>The Golden Rule:</strong> If the output involves a fact, a citation, or a line of code you intend to run in a production environment, you must verify it externally. Trust, but verify.</p>
+        </div>
+
+        <div id="domains" class="section-content container">
+            <h1>Domain-Specific Patterns</h1>
+            
+            <div class="exec-summary">
+                <span class="exec-label">Specialization</span>
+                General prompts get general results. For technical fields like Cybersecurity and Automotive Technology, we need to enforce strict formatting constraints to ensure safety and utility.
+            </div>
+
+            <h3>🐍 For Python & Cybersecurity</h3>
+            <p>When asking AI for code, beginners often get "spaghetti code"—code that works but is messy and hard to read. As an educator, you want to model best practices. Therefore, your prompts should always include a <strong>&lt;coding_standards&gt;</strong> block.</p>
+            <p>By forcing the AI to include "Docstrings" and "Error Handling," you ensure the code isn't just functional, but educational. You are teaching the students that good code is documented code.</p>
+            <pre>
+&lt;coding_standards&gt;
+1. Code must include docstrings for every function.
+2. Include error handling (try/except) blocks.
+3. Variable names must be descriptive (PEP 8 compliant).
+&lt;/coding_standards&gt;
+            </pre>
+
+            <h3>🚗 For Automotive Diagnostics</h3>
+            <p>In the shop, safety and clarity are more important than long essays. A mechanic doesn't want a 5-paragraph essay on how a starter works; they want a <strong>Diagnostic Decision Tree</strong>.</p>
+            <p>When prompting for automotive issues, force the AI into a logic-flow format. This mimics the service manuals students will use in the real world.</p>
+            <pre>
+&lt;format&gt;
+Present the solution as a "Diagnostic Decision Tree."
+Do not write paragraphs.
+Use the format: "IF [Condition] THEN [Action]".
+&lt;/format&gt;
+            </pre>
+        </div>
+
+        <div id="multimedia" class="section-content container">
+            <h1>Multimedia Hub</h1>
+            <div class="exec-summary">
+                <span class="exec-label">Resource Center</span>
+                Watch the explainer video, listen to the podcast, or review the slide deck directly in your browser.
+            </div>
+
+            <div class="media-grid">
+                
+                <div class="media-card">
+                    <div class="media-title">🎥 Explainer Video</div>
+                    <video controls>
+                        <source src="promptEngineering.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <div class="media-card">
+                    <div class="media-title">🎧 Audio Podcast</div>
+                    <audio controls>
+                        <source src="promptEngineering.m4a" type="audio/mp4">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <div class="media-card" style="grid-column: 1 / -1;">
+                    <div class="media-title">📊 Presentation Slides</div>
+                    <iframe class="pdf-viewer" src="promptEngineering.pdf"></iframe>
+                    <a href="promptEngineering.pdf" download class="download-link">Click here if slides do not load</a>
+                </div>
+
+                <div class="media-card" style="grid-column: 1 / -1;">
+                    <div class="media-title">🖼️ Cheat Sheet Infographic</div>
+                    <img src="promptEngineering.png" alt="Prompt Engineering Infographic" class="infographic">
+                </div>
+
+            </div>
+        </div>
+
+        <div id="simulator" class="section-content container">
+            <h1>The Prompt Simulator 🧪</h1>
+            <p>This interactive tool analyzes your prompt against the SOPs defined in this handbook.</p>
+            
+            <div class="sim-container">
+                <div class="sim-output" id="chatDisplay">
+                    <div class="sim-message sim-ai">
+                        <strong>System Ready.</strong><br>
+                        Enter a draft prompt below. I will analyze it for:
+                        <ul>
+                            <li>Context (Karpathy)</li>
+                            <li>Delimiters (Ng/Fulford)</li>
+                            <li>Persona (Miessler)</li>
+                            <li><strong>Output Format</strong> (Business Logic)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sim-input-area">
+                    <textarea id="userInput" rows="3" placeholder="Draft your prompt here..."></textarea>
+                    <button onclick="analyzePrompt()">Analyze & Improve</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resources" class="section-content container">
+            <h1>Resource Library</h1>
+            <p>These links have been verified to point directly to the official documentation and tools used in this handbook.</p>
+
+            <h3>📘 Official Documentation</h3>
+            <ul class="resource-list">
+                <li><a href="https://platform.claude.com/docs/en/prompt-design-intro" target="_blank">Anthropic: Prompt Design Guide</a> (Best for Structure/XML)</li>
+                <li><a href="https://ai.google.dev/gemini-api/docs/prompting-strategies" target="_blank">Google Gemini: Prompting Strategies</a> (Best for Multimodal)</li>
+                <li><a href="https://platform.openai.com/docs/guides/prompt-engineering" target="_blank">OpenAI: Prompt Engineering Guide</a> (The Industry Standard)</li>
+            </ul>
+
+            <h3>🛠️ Frameworks & Tools</h3>
+            <ul class="resource-list">
+                <li><a href="https://github.com/danielmiessler/fabric" target="_blank">The Fabric Framework (GitHub)</a> - Daniel Miessler's repository for "Prompt Patterns."</li>
+                <li><a href="https://github.com/danielmiessler/fabric/tree/main/patterns" target="_blank">Fabric Pattern Library</a> - Browse specific patterns like "Prompt Improver."</li>
+                <li><a href="https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/" target="_blank">DeepLearning.AI Course</a> - The free course by Andrew Ng & Isa Fulford.</li>
+            </ul>
+
+            <h3>👥 Experts to Follow</h3>
+            <ul class="resource-list">
+                <li><a href="https://x.com/rez0__" target="_blank">Joseph Thacker (Rez0)</a> - Expert on AI Security and Red Teaming.</li>
+                <li><a href="https://learnprompting.org/" target="_blank">Sander Schulhoff</a> - Creator of the massive "Learn Prompting" guide.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Simple tab switching logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.section-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Show target
+            document.getElementById(tabId).classList.add('active');
+
+            // Update sidebar active state
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Simulator Logic
+        function analyzePrompt() {
+            const input = document.getElementById('userInput').value;
+            const display = document.getElementById('chatDisplay');
+
+            if (!input.trim()) return;
+
+            // 1. Show User Input
+            const userMsg = document.createElement('div');
+            userMsg.className = 'sim-message sim-user';
+            userMsg.innerText = input;
+            display.appendChild(userMsg);
+
+            // 2. Clear Input
+            document.getElementById('userInput').value = '';
+
+            // 3. Analyze (Simulated Expert Logic)
+            let feedback = "<h3>📊 Analysis Report</h3>";
+            let score = 0;
+            const lower = input.toLowerCase();
+
+            // CHECK: Context Length (Karpathy)
+            if (input.length > 50) {
+                feedback += "<p><span class='tag tag-success'>✅ Context Loaded</span> Good length. You are providing enough 'state' for the model.</p>";
+                score++;
+            } else {
+                feedback += "<p><span class='tag tag-fail'>⚠️ Context Missing</span> This prompt is too short. Remember, the prompt is the 'RAM'. Add background info.</p>";
+            }
+
+            // CHECK: Persona (Miessler)
+            if (lower.includes('act as') || lower.includes('you are') || lower.includes('role')) {
+                feedback += "<p><span class='tag tag-success'>✅ Persona Detected</span> You successfully assigned a role to the AI.</p>";
+                score++;
+            } else {
+                feedback += "<p><span class='tag tag-fail'>⚠️ No Persona</span> Who is the AI supposed to be? Try starting with <em>'You are an expert in...'</em></p>";
+            }
+
+            // CHECK: Delimiters (Ng)
+            if (input.includes('"""') || input.includes("```") || input.includes("<")) {
+                feedback += "<p><span class='tag tag-success'>✅ Delimiters Used</span> Great job separating instructions from data.</p>";
+                score++;
+            } else {
+                feedback += "<p><span class='tag tag-info'>ℹ️ Tip</span> If you are pasting text to be summarized/edited, wrap it in triple quotes (\"\") or XML tags.</p>";
+            }
+
+            // CHECK: Output Format (New in V2/V3)
+            const formats = ['json', 'csv', 'table', 'markdown', 'list', 'code', 'python', 'html', 'tree'];
+            if (formats.some(f => lower.includes(f))) {
+                feedback += "<p><span class='tag tag-success'>✅ Output Format Defined</span> Good engineering.</p>";
+                score++;
+            } else {
+                feedback += "<p><span class='tag tag-fail'>❌ No Format</span> Always specify how you want the data (e.g., 'Output as a Markdown Table').</p>";
+            }
+
+            // CHECK: Safety (New in V2/V3)
+            if (lower.includes('student name') || lower.includes('password') || lower.includes('@gmail.com')) {
+                feedback += "<div class='warning-box' style='margin-top:10px; padding:10px;'>🚨 <strong>SAFETY ALERT:</strong> Possible PII detected. Ensure you sanitize names and emails before submitting.</div>";
+            }
+
+            // 4. Show Feedback
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'sim-message sim-ai';
+            aiMsg.innerHTML = feedback;
+            
+            // Artificial delay for "thinking" feel
+            setTimeout(() => {
+                display.appendChild(aiMsg);
+                display.scrollTop = display.scrollHeight;
+            }, 500);
+        }
+    </script>
+</body>
+</html>
