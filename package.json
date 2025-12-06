@@ -1,0 +1,67 @@
+{
+  "name": "prompt-engineering-handbook",
+  "version": "4.1.0",
+  "description": "Interactive Prompt Engineering SOP Handbook with automated testing",
+  "main": "src/promptAnalyzer.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:firefox": "playwright test --project=firefox",
+    "test:e2e:webkit": "playwright test --project=webkit",
+    "test:e2e:report": "playwright show-report",
+    "test:all": "npm test && npm run test:e2e",
+    "lint": "eslint src/**/*.js tests/**/*.js",
+    "lint:fix": "eslint src/**/*.js tests/**/*.js --fix",
+    "serve": "python3 -m http.server 8000",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "prompt-engineering",
+    "ai",
+    "education",
+    "interactive",
+    "tutorial"
+  ],
+  "author": "Timothy Koerner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Timothy815/prompt_engineering.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Timothy815/prompt_engineering/issues"
+  },
+  "homepage": "https://github.com/Timothy815/prompt_engineering#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.40.1",
+    "@axe-core/playwright": "^4.8.3",
+    "eslint": "^8.56.0",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.test.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 85,
+        "lines": 85,
+        "statements": 85
+      }
+    },
+    "coverageDirectory": "coverage",
+    "testMatch": [
+      "**/tests/unit/**/*.test.js"
+    ]
+  }
+}
